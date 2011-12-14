@@ -59,12 +59,12 @@ module Indirizzo
           if text[:number].nil?
              @street.map! { |single_street|
                single_street.downcase!
-               @number = single_street.scan(Match[:number])[0].to_s
+               @number = single_street.scan(Match[:number])[0].reject{|n| n.nil? || n.empty?}.first.to_s
                single_street.sub! @number, ""
                single_street.sub! /^\s*,?\s*/o, ""
               }
          else
-            @number = text[:number].to_s 
+            @number = text[:number].to_s
           end
          @street = expand_streets(@street)
           street_parts
@@ -126,7 +126,7 @@ module Indirizzo
       idx = text.rindex(regex_match)
       text[idx...idx+regex_match.length] = ""
       text.sub! /\s*,?\s*$/o, ""
-      @zip, @plus4 = @zip.map {|s|s.strip} 
+      @zip, @plus4 = @zip.map {|s|s.strip}
       text
     end
 
@@ -141,7 +141,7 @@ module Indirizzo
 
     def parse_number(regex_match, text)
       # FIXME: What if this string appears twice?
-      idx = text.index(regex_match)  
+      idx = text.index(regex_match)
       text[idx...idx+regex_match.length] = ""
       text.sub! /^\s*,?\s*/o, ""
       @prenum, @number, @sufnum = @number.map {|s| s and s.strip}
@@ -153,7 +153,7 @@ module Indirizzo
 
       @zip = text.scan(Match[:zip])[-1]
       if @zip
-        text = parse_zip($&, text) 
+        text = parse_zip($&, text)
       else
         @zip = @plus4 = ""
       end

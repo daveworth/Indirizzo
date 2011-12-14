@@ -191,7 +191,7 @@ class TestAddress < Test::Unit::TestCase
       {:street => "402 Somewhere Ln", :city => "Somewhere", :region => "WI", :postal_code => "22222", :state_abbrev => "WI"},
       ]
       for preparsed_address in addresses
-        address_for_geocode = Address.new preparsed_address 
+        address_for_geocode = Address.new preparsed_address
         assert_equal preparsed_address[:state_abbrev],address_for_geocode.state
       end
   end
