@@ -1,6 +1,4 @@
-$LOAD_PATH.unshift '../lib'
-
-require 'test/unit'
+require 'test_helper'
 require 'indirizzo/constants'
 
 include Indirizzo
