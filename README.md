@@ -1,4 +1,4 @@
-= Introduction
+# Introduction
 
 Indirizzo is a simple extraction of the Address class (along with the numbers
 and constants handling code) from [Geocommon](http://geocommons.com/)'s
@@ -15,7 +15,7 @@ my simple needs. I simply need to parse addresses that may, or may not, be
 "complete" or "well-formed".  Thus Indirizzo was born.
 
 
-== License
+## License
 
 Indirizzo is a direct derivative of Geocoder::US 2.0
 
