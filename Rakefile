@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rake/testtask'
 require 'bundler/gem_tasks'
 require 'bundler'
 begin
@@ -26,6 +27,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency 'cover_me'
 end
 Jeweler::RubygemsDotOrgTasks.new
+
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
@@ -33,3 +35,15 @@ Rake::TestTask.new(:test) do |test|
 end
 
 task :default => :test
+
+namespace :cover_me do
+  desc "Generates and opens code coverage report."
+  task :report do
+    require 'cover_me'
+    CoverMe.complete!
+  end
+end
+
+task :test do
+  Rake::Task['cover_me:report'].invoke
+end
