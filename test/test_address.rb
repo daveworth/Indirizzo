@@ -80,18 +80,18 @@ class TestAddress < Test::Unit::TestCase
       {:text   => "1600 Pennsylvania Washington DC",
        :number => "1600",
        :street => "Pennsylvania Washington",
-       :city   => "Pennsylvania Washington", # FIXME
+       :city   => "Washington",
        :state  => "DC"},
 
       {:text   => "1600 Pennsylvania Washington",
        :number => "1600",
        :street => "Pennsylvania",
        :city   => "Washington",
-       :state  => "WA"}, # FIXME
+       :state  => "DC"},
 
       {:text   => "1600 Pennsylvania 20050",
        :number => "1600",
-       :street => "Pennsylvania", # FIXME
+       :state  => "Pennsylvania",
        :zip    => "20050"},
 
       {:text   => "1600 Pennsylvania Av, 20050-9999",
