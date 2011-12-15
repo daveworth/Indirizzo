@@ -29,7 +29,7 @@ Indirizzo::Address.new("some address")
 
 ## License
 
-Indirizzo is a direct derivative of Geocoder::US 2.0
+Indirizzo is a direct derivative of [Geocoder::US 2.0](https://github.com/geocommons/geocoder)
 
 Geocoder::US 2.0 was based on earlier work by Schuyler Erle on
 a Perl module of the same name. You can find it at
