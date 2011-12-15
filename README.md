@@ -1,7 +1,7 @@
 # Introduction
 
 Indirizzo is a simple extraction of the Address class (along with the numbers
-and constants handling code) from [Geocommon](http://geocommons.com/)'s
+and constants handling code) from [Geocommons](http://geocommons.com/)'
 [Geocoder::US gem](https://github.com/geocommons/geocoder).
 
 [![Build Status](https://secure.travis-ci.org/daveworth/Indirizzo.png)](http://travis-ci.org/daveworth/Indirizzo)
