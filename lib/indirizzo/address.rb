@@ -1,4 +1,5 @@
 require 'indirizzo/constants'
+require 'awesome_print'
 
 module Indirizzo
   # Defines the matching of parsed address tokens.
@@ -7,8 +8,9 @@ module Indirizzo
     :number   => /^(\d+\W|[a-z]+)?(\d+)([a-z]?)\b/io,
     :street   => /(?:\b(?:\d+\w*|[a-z'-]+)\s*)+/io,
     :city     => /(?:\b[a-z'-]+\s*)+/io,
-    :state    => Regexp.new(State.regexp.source + "\s*$", Regexp::IGNORECASE),
-    :zip      => /(\d{5})(?:-\d{4})?\s*$/o,
+    #:state    => Regexp.new(State.regexp.source + "\s*$", Regexp::IGNORECASE),
+    :state    => State.regexp,
+    :zip      => /\b(\d{5})(?:-(\d{4}))?\b/o,
     :at       => /\s(at|@|and|&)\s/io,
     :po_box => /\b[P|p]*(OST|ost)*\.*\s*[O|o|0]*(ffice|FFICE)*\.*\s*[B|b][O|o|0][X|x]\b/
   }
@@ -126,16 +128,17 @@ module Indirizzo
       idx = text.rindex(regex_match)
       text[idx...idx+regex_match.length] = ""
       text.sub! /\s*,?\s*$/o, ""
-      @zip, @plus4 = @zip.map {|s|s.strip}
+      @zip, @plus4 = @zip.map {|s|s.strip if s}
       text
     end
 
     def parse_state(regex_match, text)
       idx = text.rindex(regex_match)
-      text[idx...idx+regex_match.length] = ""
-      text.sub! /\s*,?\s*$/o, ""
       @full_state = @state[0].strip # special case: New York
       @state = State[@full_state]
+      @city = "Washington" if @state == "DC" && text[idx...idx+regex_match.length] =~ /washington\s+d\.?c\.?/i
+      text[idx...idx+regex_match.length] = ""
+      text.sub! /\s*,?\s*$/o, ""
       text
     end
 
@@ -184,19 +187,21 @@ module Indirizzo
       # SPECIAL CASE: 1600 Pennsylvania 20050
       @street << @full_state if @street.empty? and @state.downcase != @full_state.downcase
 
-      @city = text.scan(Match[:city])
-      if !@city.empty?
-        @city = [@city[-1].strip]
-        add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}} 
-        @city |= add
-        @city.map! {|s| s.downcase}
-        @city.uniq!
-      else
-        @city = []
-      end
+      if @city.nil? || @city.empty?
+        @city = text.scan(Match[:city])
+        if !@city.empty?
+          @city = [@city[-1].strip]
+          add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}} 
+          @city |= add
+          @city.map! {|s| s.downcase}
+          @city.uniq!
+        else
+          @city = []
+        end
 
-      # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
-      @city << @full_state if @state.downcase != @full_state.downcase
+        # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
+        @city << @full_state if @state.downcase != @full_state.downcase
+      end
     end
 
     def expand_streets(street)

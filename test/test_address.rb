@@ -62,6 +62,19 @@ class TestAddress < Test::Unit::TestCase
     assert addr_po.po_box?
   end
 
+  def test_special_parse
+    addrs = [
+      {
+       :text   => "23 Home St    Hometown  PA  12345  US",
+       :number => "23",
+       :state  => "PA",
+       :street => "Home St",
+       :city   => "Hometown",
+       :zip    => "12345"
+    }
+    ].each { |fixture| check_addr(fixture) }
+  end
+
   def test_parse
     addrs = [
       {:text   => "1600 Pennsylvania Av., Washington DC 20050",
@@ -79,24 +92,27 @@ class TestAddress < Test::Unit::TestCase
 
       {:text   => "1600 Pennsylvania Washington DC",
        :number => "1600",
-       :street => "Pennsylvania Washington",
        :city   => "Washington",
+       :street => "Pennsylvania",
        :state  => "DC"},
 
       {:text   => "1600 Pennsylvania Washington",
        :number => "1600",
        :street => "Pennsylvania",
        :city   => "Washington",
-       :state  => "DC"},
+       #:state  => "DC"
+       },
 
       {:text   => "1600 Pennsylvania 20050",
        :number => "1600",
-       :state  => "Pennsylvania",
+       :state  => "PA",
        :zip    => "20050"},
 
       {:text   => "1600 Pennsylvania Av, 20050-9999",
        :number => "1600",
+       #:state  => "PA",
        :street => "Pennsylvania Ave",
+       :plus4  => "9999",
        :zip    => "20050"},
 
       {:text   => "1005 Gravenstein Highway North, Sebastopol CA",
@@ -152,19 +168,8 @@ class TestAddress < Test::Unit::TestCase
        :street => "Ave of the Americas",
        :city   => "New York"},
 
-    ]
-    for fixture in addrs
-      text = fixture.delete(:text)
-      addr = Address.new(text)
-      for key, val in fixture
-        result = addr.send key
-        if result.kind_of? Array
-          result.map! {|str| str.downcase}
-          assert result.member?(val.downcase), "#{text} (#{key}) = #{result.inspect}"
-        else
-          assert_equal val, result, "#{text} (#{key}) = #{result.inspect}"
-        end
-      end
+    ].each do |fixture|
+      check_addr(fixture)
     end
   end
 
@@ -225,4 +230,20 @@ class TestAddress < Test::Unit::TestCase
         assert_equal preparsed_address[:country],address_for_geocode.state
       end
   end
+
+  def check_addr(fixture)
+    text = fixture[:text]
+    addr = Address.new(text)
+    fixture.reject{|k,v| k == :text}.each do |key, val|
+      result = addr.send key
+      if result.kind_of? Array
+        result.map! {|str| str.downcase}
+        assert result.member?(val.downcase), "#{text} (#{key}) = #{result.inspect}"
+      else
+        assert_equal val, result, "#{text} (#{key}) = #{result.inspect}"
+      end
+    end
+  end
+
+
 end
