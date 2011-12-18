@@ -74,105 +74,6 @@ class TestAddress < Test::Unit::TestCase
     }
     ].each { |fixture| check_addr(fixture) }
   end
-
-  def test_parse
-    addrs = [
-      {:text   => "1600 Pennsylvania Av., Washington DC 20050",
-       :number => "1600",
-       :street => "Pennsylvania Ave",
-       :city   => "Washington",
-       :state  => "DC",
-       :zip    => "20050"},
-
-      {:text   => "1600 Pennsylvania, Washington DC",
-       :number => "1600",
-       :street => "Pennsylvania",
-       :city   => "Washington",
-       :state  => "DC"},
-
-      {:text   => "1600 Pennsylvania Washington DC",
-       :number => "1600",
-       :city   => "Washington",
-       :street => "Pennsylvania",
-       :state  => "DC"},
-
-      {:text   => "1600 Pennsylvania Washington",
-       :number => "1600",
-       :street => "Pennsylvania",
-       :city   => "Washington",
-       #:state  => "DC"
-       },
-
-      {:text   => "1600 Pennsylvania 20050",
-       :number => "1600",
-       :state  => "PA",
-       :zip    => "20050"},
-
-      {:text   => "1600 Pennsylvania Av, 20050-9999",
-       :number => "1600",
-       #:state  => "PA",
-       :street => "Pennsylvania Ave",
-       :plus4  => "9999",
-       :zip    => "20050"},
-
-      {:text   => "1005 Gravenstein Highway North, Sebastopol CA",
-       :number => "1005",
-       :street => "Gravenstein Hwy N",
-       :city   => "Sebastopol",
-       :state  => "CA"},
-
-      {:text   => "100 N 7th St, Brooklyn",
-       :number => "100",
-       :street => "N 7 St",
-       :city   => "Brooklyn"},
-
-      {:text   => "100 N Seventh St, Brooklyn",
-       :number => "100",
-       :street => "N 7 St",
-       :city   => "Brooklyn"},
-
-      {:text   => "100 Central Park West, New York, NY",
-       :number => "100",
-       :street => "Central Park W",
-       :city   => "New York",
-       :state  => "NY"},
-
-      {:text   => "100 Central Park West, 10010",
-       :number => "100",
-       :street => "Central Park W",
-       :zip    => "10010"},
-
-      {:text   => "1400 Avenue of the Americas, New York, NY 10019",
-       :number => "1400",
-       :street => "Ave of the Americas",
-       :city   => "New York",
-       :state  => "NY"},
-
-      {:text   => "1400 Avenue of the Americas, New York",
-       :number => "1400",
-       :street => "Ave of the Americas",
-       :city   => "New York"},
-
-      {:text   => "1400 Ave of the Americas, New York",
-       :number => "1400",
-       :street => "Ave of the Americas",
-       :city   => "New York"},
-
-      {:text   => "1400 Av of the Americas, New York",
-       :number => "1400",
-       :street => "Ave of the Americas",
-       :city   => "New York"},
-
-      {:text   => "1400 Av of the Americas New York",
-       :number => "1400",
-       :street => "Ave of the Americas",
-       :city   => "New York"},
-
-    ].each do |fixture|
-      check_addr(fixture)
-    end
-  end
-
   def test_skip_parse
     addresses = [
       {:street => "1233 Main St", :city => "Springfield", :region => "VA", :postal_code => "12345", :final_number => "1233", :parsed_street => "main st"},
@@ -231,6 +132,107 @@ class TestAddress < Test::Unit::TestCase
       end
   end
 
+end
+
+class TestAddress
+  [
+    {:text   => "1600 Pennsylvania Av., Washington DC 20050",
+     :number => "1600",
+     :street => "Pennsylvania Ave",
+     :city   => "Washington",
+     :state  => "DC",
+     :zip    => "20050"},
+
+    {:text   => "1600 Pennsylvania, Washington DC",
+     :number => "1600",
+     :street => "Pennsylvania",
+     :city   => "Washington",
+     :state  => "DC"},
+
+    {:text   => "1600 Pennsylvania Washington DC",
+     :number => "1600",
+     :city   => "Washington",
+     :street => "Pennsylvania",
+     :state  => "DC"},
+
+    {:text   => "1600 Pennsylvania Washington",
+     :number => "1600",
+     :street => "Pennsylvania",
+     :city   => "Washington",
+     #:state  => "DC"
+     },
+
+    {:text   => "1600 Pennsylvania 20050",
+     :number => "1600",
+     :state  => "PA",
+     :zip    => "20050"},
+
+    {:text   => "1600 Pennsylvania Av, 20050-9999",
+     :number => "1600",
+     #:state  => "PA",
+     :street => "Pennsylvania Ave",
+     :plus4  => "9999",
+     :zip    => "20050"},
+
+    {:text   => "1005 Gravenstein Highway North, Sebastopol CA",
+     :number => "1005",
+     :street => "Gravenstein Hwy N",
+     :city   => "Sebastopol",
+     :state  => "CA"},
+
+    {:text   => "100 N 7th St, Brooklyn",
+     :number => "100",
+     :street => "N 7 St",
+     :city   => "Brooklyn"},
+
+    {:text   => "100 N Seventh St, Brooklyn",
+     :number => "100",
+     :street => "N 7 St",
+     :city   => "Brooklyn"},
+
+    {:text   => "100 Central Park West, New York, NY",
+     :number => "100",
+     :street => "Central Park W",
+     :city   => "New York",
+     :state  => "NY"},
+
+    {:text   => "100 Central Park West, 10010",
+     :number => "100",
+     :street => "Central Park W",
+     :zip    => "10010"},
+
+    {:text   => "1400 Avenue of the Americas, New York, NY 10019",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York",
+     :state  => "NY"},
+
+    {:text   => "1400 Avenue of the Americas, New York",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York"},
+
+    {:text   => "1400 Ave of the Americas, New York",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York"},
+
+    {:text   => "1400 Av of the Americas, New York",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York"},
+
+    {:text   => "1400 Av of the Americas New York",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York"},
+
+  ].each do |fixture|
+    define_method "test_parse_#{fixture[:text].tr('.,', '').gsub(/\s+/,'_')}" do
+      check_addr(fixture)
+    end
+  end
+
   def check_addr(fixture)
     text = fixture[:text]
     addr = Address.new(text)
@@ -244,6 +246,4 @@ class TestAddress < Test::Unit::TestCase
       end
     end
   end
-
-
 end
