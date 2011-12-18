@@ -9,18 +9,6 @@ class TestAddress < Test::Unit::TestCase
     addr = Address.new("1600 Pennsylvania Av., Washington DC")
     assert_equal "1600 Pennsylvania Av, Washington DC", addr.text
   end
-  def test_clean
-    fixtures = [
-      [ "cleaned text", "cleaned: text!" ],
-      [ "cleaned-text 2", "cleaned-text: #2?" ],
-      [ "it's working 1/2", "~it's working 1/2~" ],
-      [ "it's working, yes", "it's working, yes...?" ],
-      [ "it's working & well", "it's working & well?" ]
-    ]
-    fixtures.each {|output, given|
-      assert_equal output, Address.new(given).text
-    }
-  end
   def test_expand_numbers
     num_list = ["5", "fifth", "five"]
     num_list.each {|n|
@@ -28,52 +16,12 @@ class TestAddress < Test::Unit::TestCase
       assert_equal num_list, addr.expand_numbers(n).to_a.sort
     }
   end
-  def test_city_parse
-    places = [
-      [ "New York, NY",     "New York", "NY", "" ],
-      [ "NY",               "", "NY",   "" ],
-      [ "New York",         "New York", "NY",   "" ],
-      [ "Philadelphia",     "Philadelphia", "", "" ],
-      [ "Philadelphia PA",  "Philadelphia", "PA", "" ],
-      [ "Philadelphia, PA", "Philadelphia", "PA", "" ],
-      [ "Philadelphia, Pennsylvania", "Philadelphia", "PA", "" ],
-      [ "Philadelphia, Pennsylvania 19131", "Philadelphia", "PA", "19131" ],
-      [ "Philadelphia 19131", "Philadelphia", "", "19131" ],
-      [ "Pennsylvania 19131", "Pennsylvania", "PA", "19131" ], # kind of a misfeature
-      [ "19131", "", "", "19131" ],
-      [ "19131-9999", "", "", "19131" ],
-    ]
-    for fixture in places
-      addr  = Address.new fixture[0]
-      [:city, :state, :zip].zip(fixture[1..3]).each {|key,val|
-        result = addr.send key
-        result = [result.downcase] unless result.kind_of? Array
-        if result.empty?
-          assert_equal val, "", key.to_s + " test no result " + fixture.join("/")
-        else
-          assert result.member?(val.downcase), key.to_s + " test " + result.inspect + fixture.join("/")
-        end
-      }
-    end
-  end
 
   def test_po_box
     addr_po = Address.new "PO Box 1111 Herndon VA 20171"
     assert addr_po.po_box?
   end
 
-  def test_special_parse
-    addrs = [
-      {
-       :text   => "23 Home St    Hometown  PA  12345  US",
-       :number => "23",
-       :state  => "PA",
-       :street => "Home St",
-       :city   => "Hometown",
-       :zip    => "12345"
-    }
-    ].each { |fixture| check_addr(fixture) }
-  end
   def test_skip_parse
     addresses = [
       {:street => "1233 Main St", :city => "Springfield", :region => "VA", :postal_code => "12345", :final_number => "1233", :parsed_street => "main st"},
@@ -135,6 +83,50 @@ class TestAddress < Test::Unit::TestCase
 end
 
 class TestAddress
+
+  # test cleaning code
+  [
+    [ "cleaned text", "cleaned: text!" ],
+    [ "cleaned-text 2", "cleaned-text: #2?" ],
+    [ "it's working 1/2", "~it's working 1/2~" ],
+    [ "it's working, yes", "it's working, yes...?" ],
+    [ "it's working & well", "it's working & well?" ]
+  ].each do |output, given|
+    define_method "test_clean_#{output.tr('-/\'&', '').gsub(/\s+/, '_')}" do
+      assert_equal output, Address.new(given).text
+    end
+  end
+
+  # test the city parsing code
+  [
+    [ "New York, NY",     "New York", "NY", "" ],
+    [ "NY",               "", "NY",   "" ],
+    [ "New York",         "New York", "NY",   "" ],
+    [ "Philadelphia",     "Philadelphia", "", "" ],
+    [ "Philadelphia PA",  "Philadelphia", "PA", "" ],
+    [ "Philadelphia, PA", "Philadelphia", "PA", "" ],
+    [ "Philadelphia, Pennsylvania", "Philadelphia", "PA", "" ],
+    [ "Philadelphia, Pennsylvania 19131", "Philadelphia", "PA", "19131" ],
+    [ "Philadelphia 19131", "Philadelphia", "", "19131" ],
+    [ "Pennsylvania 19131", "Pennsylvania", "PA", "19131" ], # kind of a misfeature
+    [ "19131", "", "", "19131" ],
+    [ "19131-9999", "", "", "19131" ],
+  ].each do |fixture|
+    define_method "test_city_parse_#{fixture[0].tr(',','').gsub(/\s+/,'_')}" do
+      addr  = Address.new fixture[0]
+      [:city, :state, :zip].zip(fixture[1..3]).each do |key,val|
+        result = addr.send key
+        result = [result.downcase] unless result.kind_of? Array
+        if result.empty?
+          assert_equal val, "", key.to_s + " test no result " + fixture.join("/")
+        else
+          assert result.member?(val.downcase), key.to_s + " test " + result.inspect + fixture.join("/")
+        end
+      end
+    end
+  end
+
+  # test address parsing code
   [
     {:text   => "1600 Pennsylvania Av., Washington DC 20050",
      :number => "1600",
@@ -159,8 +151,7 @@ class TestAddress
      :number => "1600",
      :street => "Pennsylvania",
      :city   => "Washington",
-     #:state  => "DC"
-     },
+     :state  => "DC"},
 
     {:text   => "1600 Pennsylvania 20050",
      :number => "1600",
@@ -226,6 +217,13 @@ class TestAddress
      :number => "1400",
      :street => "Ave of the Americas",
      :city   => "New York"},
+
+    {:text   => "23 Home St    Hometown  PA  12345  US",
+     :number => "23",
+     :state  => "PA",
+     :street => "Home St",
+     :city   => "Hometown",
+     :zip    => "12345"}
 
   ].each do |fixture|
     define_method "test_parse_#{fixture[:text].tr('.,', '').gsub(/\s+/,'_')}" do
