@@ -113,17 +113,22 @@ class TestAddress
     [ "19131-9999", "", "", "19131" ],
   ].each do |fixture|
     define_method "test_city_parse_#{fixture[0].tr(',','').gsub(/\s+/,'_')}" do
-      addr  = Address.new fixture[0]
+      check_city(fixture)
+    end
+  end
+
+  def check_city(fixture)
+      addr  = Address.new(fixture[0])
+      #ap addr
       [:city, :state, :zip].zip(fixture[1..3]).each do |key,val|
-        result = addr.send key
-        result = [result.downcase] unless result.kind_of? Array
+        result = addr.send(key)
+        result = [result.downcase] unless result.kind_of?(Array)
         if result.empty?
           assert_equal val, "", key.to_s + " test no result " + fixture.join("/")
         else
           assert result.member?(val.downcase), key.to_s + " test " + result.inspect + fixture.join("/")
         end
       end
-    end
   end
 
   # test address parsing code
@@ -218,7 +223,7 @@ class TestAddress
      :street => "Ave of the Americas",
      :city   => "New York"},
 
-    {:text   => "23 Home St    Hometown  PA  12345  US",
+    {:text   => "23 Home St,    Hometown  PA,  12345  US",
      :number => "23",
      :state  => "PA",
      :street => "Home St",

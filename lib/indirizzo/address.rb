@@ -7,8 +7,7 @@ module Indirizzo
     # FIXME: shouldn't have to anchor :number and :zip at start/end
     :number   => /^(\d+\W|[a-z]+)?(\d+)([a-z]?)\b/io,
     :street   => /(?:\b(?:\d+\w*|[a-z'-]+)\s*)+/io,
-    :city     => /(?:\b[a-z'-]+\s*)+/io,
-    #:state    => Regexp.new(State.regexp.source + "\s*$", Regexp::IGNORECASE),
+    :city     => /(?:\b[a-z][a-z'-]+\s*)+/io,
     :state    => State.regexp,
     :zip      => /\b(\d{5})(?:-(\d{4}))?\b/o,
     :at       => /\s(at|@|and|&)\s/io,
@@ -124,56 +123,46 @@ module Indirizzo
       strings
     end
 
-    def parse_zip(regex_match, text)
-      idx = text.rindex(regex_match)
-      text[idx...idx+regex_match.length] = ""
-      text.sub! /\s*,?\s*$/o, ""
-      @zip, @plus4 = @zip.map {|s|s.strip if s}
-      text
-    end
-
     def parse_state(regex_match, text)
       idx = text.rindex(regex_match)
       @full_state = @state[0].strip # special case: New York
       @state = State[@full_state]
       @city = "Washington" if @state == "DC" && text[idx...idx+regex_match.length] =~ /washington\s+d\.?c\.?/i
-      text[idx...idx+regex_match.length] = ""
-      text.sub! /\s*,?\s*$/o, ""
-      text
-    end
-
-    def parse_number(regex_match, text)
-      # FIXME: What if this string appears twice?
-      idx = text.index(regex_match)
-      text[idx...idx+regex_match.length] = ""
-      text.sub! /^\s*,?\s*/o, ""
-      @prenum, @number, @sufnum = @number.map {|s| s and s.strip}
       text
     end
 
     def parse
       text = @text.clone.downcase
 
-      @zip = text.scan(Match[:zip])[-1]
+      @zip = text.scan(Match[:zip]).last
       if @zip
-        text = parse_zip($&, text)
+        last_match = $&
+        zip_index = text.rindex(last_match)
+        @zip, @plus4 = @zip.map {|s| s and s.strip }
       else
         @zip = @plus4 = ""
+        zip_index = text.length
       end
 
-      @state = text.scan(Match[:state])[-1]
+      @state = text.scan(Match[:state]).last
       if @state
-        text = parse_state($&, text)
+        last_match = $&
+        state_index = text.rindex(last_match)
+        text = parse_state(last_match, text)
       else
         @full_state = ""
         @state = ""
       end
 
-      @number = text.scan(Match[:number])[0]
+      @number = text.scan(Match[:number]).first
       # FIXME: 230 Fish And Game Rd, Hudson NY 12534
       if @number # and not intersection?
-        text = parse_number($&, text)
+        last_match = $&
+        number_index = text.index(last_match)
+        number_end_index = number_index + last_match.length - 1
+        @prenum, @number, @sufnum = @number.map {|s| s and s.strip}
       else
+        number_end_index = -1
         @prenum = @number = @sufnum = ""
       end
 
@@ -182,16 +171,25 @@ module Indirizzo
       # Sault Ste. Marie
 
       # FIXME: PO Box should geocode to ZIP
-      @street = text.scan(Match[:street])
+      street_search_end_index = [state_index,zip_index,text.length].tap{|a| ap a if !@plus4.blank?}.reject(&:nil?).min-1
+      if !@plus4.blank?
+        ap @text
+        ap self
+      end
+      @street = text[number_end_index+1..street_search_end_index].tap{|m| ap m if !@plus4.blank?}.scan(Match[:street]).tap{|m| ap m if !@plus4.blank?}.map { |s| s and s.strip }
+
       @street = expand_streets(@street)
       # SPECIAL CASE: 1600 Pennsylvania 20050
       @street << @full_state if @street.empty? and @state.downcase != @full_state.downcase
 
+      street_end_index = @street.map { |s| text.rindex(s) }.reject(&:nil?).min||0
+
       if @city.nil? || @city.empty?
-        @city = text.scan(Match[:city])
+        @city = text[street_end_index..street_search_end_index+1].scan(Match[:city])
         if !@city.empty?
-          @city = [@city[-1].strip]
-          add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}} 
+          #@city = [@city[-1].strip]
+          @city = [@city.last.strip]
+          add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}}
           @city |= add
           @city.map! {|s| s.downcase}
           @city.uniq!
