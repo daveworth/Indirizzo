@@ -148,6 +148,7 @@ class TestAddress < Test::Unit::TestCase
      :state  => "DC"},
 
     {:text   => "1600 Pennsylvania Washington",
+     :pending => true,
      :number => "1600",
      :street => "Pennsylvania",
      :city   => "Washington",
@@ -159,6 +160,7 @@ class TestAddress < Test::Unit::TestCase
      :zip    => "20050"},
 
     {:text   => "1600 Pennsylvania Av, 20050-9999",
+     :pending => true,
      :number => "1600",
      #:state  => "PA",
      :street => "Pennsylvania Ave",
@@ -249,6 +251,7 @@ class TestAddress < Test::Unit::TestCase
      :country => "US"}
   ].each do |fixture|
     define_method "test_parse_#{fixture[:text].gsub(/(?:\s+|[.,])/,'_')}" do
+      pend if fixture[:pending]
       check_addr(fixture)
     end
   end
