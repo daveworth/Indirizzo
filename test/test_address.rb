@@ -80,10 +80,6 @@ class TestAddress < Test::Unit::TestCase
       end
   end
 
-end
-
-class TestAddress
-
   # test cleaning code
   [
     [ "cleaned text", "cleaned: text!" ],
@@ -112,14 +108,13 @@ class TestAddress
     [ "19131", "", "", "19131" ],
     [ "19131-9999", "", "", "19131" ],
   ].each do |fixture|
-    define_method "test_city_parse_#{fixture[0].tr(',','').gsub(/\s+/,'_')}" do
+    define_method "test_city_parse_#{fixture[0].gsub(/(?:\s+|[,])/,'_')}" do
       check_city(fixture)
     end
   end
 
   def check_city(fixture)
       addr  = Address.new(fixture[0])
-      #ap addr
       [:city, :state, :zip].zip(fixture[1..3]).each do |key,val|
         result = addr.send(key)
         result = [result.downcase] unless result.kind_of?(Array)
@@ -231,7 +226,7 @@ class TestAddress
      :zip    => "12345"}
 
   ].each do |fixture|
-    define_method "test_parse_#{fixture[:text].tr('.,', '').gsub(/\s+/,'_')}" do
+    define_method "test_parse_#{fixture[:text].gsub(/(?:\s+|[.,])/,'_')}" do
       check_addr(fixture)
     end
   end
