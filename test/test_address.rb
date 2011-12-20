@@ -159,6 +159,13 @@ class TestAddress < Test::Unit::TestCase
      :state  => "PA",
      :zip    => "20050"},
 
+    {:text   => "1600 Pennsylvania Av, Washington DC 20050-9999",
+     :number => "1600",
+     :state  => "DC",
+     :street => "Pennsylvania Ave",
+     :plus4  => "9999",
+     :zip    => "20050"},
+
     {:text   => "1600 Pennsylvania Av, 20050-9999",
      :pending => true,
      :number => "1600",
