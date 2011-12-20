@@ -24,6 +24,7 @@ module Indirizzo
     attr_accessor :city
     attr_accessor :state
     attr_accessor :zip, :plus4
+    attr_accessor :country
 
     # Takes an address or place name string as its sole argument.
     def initialize (text)
@@ -138,11 +139,16 @@ module Indirizzo
       if @zip
         last_match = $&
         zip_index = text.rindex(last_match)
+        zip_end_index = zip_index + last_match.length - 1
         @zip, @plus4 = @zip.map {|s| s and s.strip }
       else
         @zip = @plus4 = ""
         zip_index = text.length
+        zip_end_index = -1
       end
+
+      @country = @text[zip_end_index+1..-1].sub(/^\s*,\s*/, '').strip
+      @country = nil if @country == text
 
       @state = text.scan(Match[:state]).last
       if @state

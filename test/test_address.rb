@@ -192,11 +192,26 @@ class TestAddress < Test::Unit::TestCase
      :street => "Central Park W",
      :zip    => "10010"},
 
-    {:text   => "1400 Avenue of the Americas, New York, NY 10019",
+    {:text   => "1400 Avenue of the Americas, New York, NY 10019, US",
      :number => "1400",
      :street => "Ave of the Americas",
      :city   => "New York",
-     :state  => "NY"},
+     :state  => "NY",
+     :country => "US"},
+
+    {:text   => "1400 Avenue of the Americas, New York, NY 10019, USA",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York",
+     :state  => "NY",
+     :country => "USA"},
+
+    {:text   => "1400 Avenue of the Americas, New York, NY 10019,   United States of America  ",
+     :number => "1400",
+     :street => "Ave of the Americas",
+     :city   => "New York",
+     :state  => "NY",
+     :country => "United States of America"},
 
     {:text   => "1400 Avenue of the Americas, New York",
      :number => "1400",
@@ -225,6 +240,13 @@ class TestAddress < Test::Unit::TestCase
      :city   => "Hometown",
      :zip    => "12345"}
 
+    {:text   => "23 Home St, Apt. A, Hometown  PA,  12345  US",
+     :number => "23",
+     :state  => "PA",
+     :street => "Home St",
+     :city   => "Hometown",
+     :zip    => "12345",
+     :country => "US"}
   ].each do |fixture|
     define_method "test_parse_#{fixture[:text].gsub(/(?:\s+|[.,])/,'_')}" do
       check_addr(fixture)
