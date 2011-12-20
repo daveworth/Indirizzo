@@ -247,7 +247,7 @@ class TestAddress < Test::Unit::TestCase
      :state  => "PA",
      :street => "Home St",
      :city   => "Hometown",
-     :zip    => "12345"}
+     :zip    => "12345"},
 
     {:text   => "23 Home St, Apt. A, Hometown  PA,  12345  US",
      :number => "23",
