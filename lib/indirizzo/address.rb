@@ -171,12 +171,8 @@ module Indirizzo
       # Sault Ste. Marie
 
       # FIXME: PO Box should geocode to ZIP
-      street_search_end_index = [state_index,zip_index,text.length].tap{|a| ap a if !@plus4.blank?}.reject(&:nil?).min-1
-      if !@plus4.blank?
-        ap @text
-        ap self
-      end
-      @street = text[number_end_index+1..street_search_end_index].tap{|m| ap m if !@plus4.blank?}.scan(Match[:street]).tap{|m| ap m if !@plus4.blank?}.map { |s| s and s.strip }
+      street_search_end_index = [state_index,zip_index,text.length].reject(&:nil?).min-1
+      @street = text[number_end_index+1..street_search_end_index].scan(Match[:street]).map { |s| s and s.strip }
 
       @street = expand_streets(@street)
       # SPECIAL CASE: 1600 Pennsylvania 20050
@@ -200,6 +196,7 @@ module Indirizzo
         # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
         @city << @full_state if @state.downcase != @full_state.downcase
       end
+
     end
 
     def expand_streets(street)
