@@ -20,10 +20,10 @@ module Indirizzo
     # whitespace-delimited prefixes to keys and values in the two-way Map.
     def build_partial
       @partial = Set.new()
-      [keys, values].flatten.each {|item|
+      [keys, values].flatten.each do |item|
         @partial << item.downcase
         item.downcase.split.each {|token| @partial << token}
-      }
+      end
     end
     def build_match
       @regexp = Regexp.new(
@@ -612,6 +612,8 @@ module Indirizzo
     "Connecticut"	=> "CT",
     "Delaware"		=> "DE",
     "District of Columbia" => "DC",
+    "Washington DC" => "DC",
+    "Washington D.C." => "DC",
     "Federated States of Micronesia" => "FM",
     "Florida"		=> "FL",
     "Georgia"		=> "GA",
