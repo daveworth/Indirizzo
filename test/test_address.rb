@@ -5,16 +5,31 @@ require 'indirizzo/address'
 include Indirizzo
 
 class TestAddress < Test::Unit::TestCase
+
   def test_new
     addr = Address.new("1600 Pennsylvania Av., Washington DC")
     assert_equal "1600 Pennsylvania Av, Washington DC", addr.text
   end
+
   def test_expand_numbers
     num_list = ["5", "fifth", "five"]
     num_list.each {|n|
       addr = Address.new(n)
       assert_equal num_list, addr.expand_numbers(n).to_a.sort
     }
+  end
+
+  def test_expand_street
+    addr = Address.new("1 First St, Atlanta GA, 12345")
+    expected_streets = ["1 st", "first st", "one st"]
+    expected_streets.each_with_index do |street, index|
+      addr.street[index] = expected_streets[index]
+    end
+  end
+
+  def test_no_expand_street
+    addr = Address.new("1 First St, Atlanta GA, 12345", :expand_streets => false)
+    assert_equal addr.street.first, "first st"
   end
 
   def test_po_box

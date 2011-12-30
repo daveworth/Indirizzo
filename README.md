@@ -27,6 +27,28 @@ require 'Indirizzo'
 Indirizzo::Address.new("some address")
 ```
 
+### Options
+
+`#new` takes a string or a (pre-parsed address) hash as its first parameter and
+an options hash.
+
+In the case of a string specifying and address, Indirizzo will do its best to
+parse any matter of string, though results can be complicated.  In the cases
+where things are complicated the various attributes in Indirizzo do their best
+to keep all reasonable answers in an array which you can inspect.  (ex: "1600
+Pensylvania Washington", in this case the state is difficult to determine so
+both "Pennsylvania" and "Washington" are returned for City and Street)
+
+In the case of the pre-parsed address hash the keys of the
+hash be symbols matching the various Address fields in Indirizzo (specifically
+`:prenum`, :`number`, `:sufnum`, `:street`, `:city`, `:state`, `:zip`, `:plus4`,
+and `:country`)
+
+Currently only one option is supported for the option hash:
+
+* `:expand_streets` - a boolean which determines if "1 First St"'s street parameter
+  is expanded into "1 st", "first st", and "one st" or simply left as "first st"
+
 ## License
 
 Indirizzo is a direct derivative of [Geocoder::US 2.0](https://github.com/geocommons/geocoder)
