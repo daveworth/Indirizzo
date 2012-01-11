@@ -1,10 +1,15 @@
 require 'test_helper'
-require 'set'
 require 'indirizzo/address'
 
 include Indirizzo
 
 class TestAddress < Test::Unit::TestCase
+
+  def test_new_raises_exception_with_no_text
+    assert_raise do
+      Address.new
+    end
+  end
 
   def test_new
     addr = Address.new("1600 Pennsylvania Av., Washington DC")

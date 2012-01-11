@@ -10,31 +10,16 @@ module Indirizzo
     attr_accessor :regexp
     def self.[] (*items)
       hash = super(*items)
-      #hash.build_partial
       hash.build_match
       hash.keys.each {|k| hash[k.downcase] = hash.fetch(k)}
       hash.values.each {|v| hash[v.downcase] = v}
       hash.freeze
-    end
-    # The build_partial method constructs a hash of case-insensitive,
-    # whitespace-delimited prefixes to keys and values in the two-way Map.
-    def build_partial
-      @partial = Set.new()
-      [keys, values].flatten.each do |item|
-        @partial << item.downcase
-        item.downcase.split.each {|token| @partial << token}
-      end
     end
     def build_match
       @regexp = Regexp.new(
         '\b(' + [keys,values].flatten.join("|") + ')\b',
         Regexp::IGNORECASE)
     end
-    # The partial? method returns true if the key is a prefix of some
-    # key in the Map.
-    def partial? (key)
-      @partial.member? key.downcase
-    end 
     def key? (key)
       super(key.downcase)
     end
