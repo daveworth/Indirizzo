@@ -42,17 +42,24 @@ class TestAddress < Test::Unit::TestCase
     assert addr_po.po_box?
   end
 
+  def test_intersection
+    addr_intersection = Address.new "Means St. at Optimism Way"
+    assert addr_intersection.intersection?
+  end
+
   def test_skip_parse
     addresses = [
       {:street => "1233 Main St", :city => "Springfield", :region => "VA", :postal_code => "12345", :final_number => "1233", :parsed_street => "main st"},
       {:street => "somewhere Ln", :city => "Somewhere", :region => "WI", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
+      {:street => "somewhere Ln", :city => "Somewhere", :state => "WI", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
       ]
       for preparsed_address in addresses
         address_for_geocode = Address.new preparsed_address
         assert_equal preparsed_address[:parsed_street],address_for_geocode.street[0]
         assert_equal preparsed_address[:final_number],address_for_geocode.number
         assert_equal preparsed_address[:city],address_for_geocode.city[0]
-        assert_equal preparsed_address[:region],address_for_geocode.state
+        assert_equal preparsed_address[:region],address_for_geocode.state if preparsed_address[:region]
+        assert_equal preparsed_address[:state],address_for_geocode.state  if preparsed_address[:state]
         assert_equal preparsed_address[:postal_code],address_for_geocode.zip
       end
   end
@@ -128,8 +135,13 @@ class TestAddress < Test::Unit::TestCase
     [ "19131", "", "", "19131" ],
     [ "19131-9999", "", "", "19131" ],
   ].each do |fixture|
-    define_method "test_city_parse_#{fixture[0].gsub(/(?:\s+|[,])/,'_')}" do
+    fixture_name = fixture[0].gsub(/(?:\s+|[,])/,'_')
+    define_method "test_city_parse_#{fixture_name}" do
       check_city(fixture)
+    end
+
+    define_method "test_city_parts_#{fixture_name}" do
+      ap Address.new(fixture).city_parts
     end
   end
 

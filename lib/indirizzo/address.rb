@@ -88,10 +88,10 @@ module Indirizzo
             # full_state = @state.strip # special case: New York
             @state = State[@state]
           end
-        elsif !text[:country].nil?
-          @state = text[:country]
         elsif !text[:state].nil?
           @state = text[:state]
+        elsif !text[:country].nil?
+          @state = text[:country]
         end
 
         @zip = text[:postal_code]
@@ -263,17 +263,15 @@ module Indirizzo
 
     def city_parts
       strings = []
-      @city.map {|string|
+      @city.map do |string|
         tokens = string.split(" ")
         strings |= (0...tokens.length).to_a.reverse.map {|i|
                    (i...tokens.length).map {|j| tokens[i..j].join(" ")}}.flatten
-      }
+      end
       # Don't return strings that consist solely of abbreviations.
       # NOTE: Is this a micro-optimization that has edge cases that will break?
       # Answer: Yes, it breaks on "Prairie"
-      good_strings = strings.reject {|s| Std_Abbr.key? s}
-      strings = good_strings if !good_strings.empty?
-      strings.uniq
+      strings.reject { |s| Std_Abbr.key?(s) }.uniq
     end
 
     def city= (strings)
