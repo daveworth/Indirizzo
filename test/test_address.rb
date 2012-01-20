@@ -139,10 +139,6 @@ class TestAddress < Test::Unit::TestCase
     define_method "test_city_parse_#{fixture_name}" do
       check_city(fixture)
     end
-
-    define_method "test_city_parts_#{fixture_name}" do
-      ap Address.new(fixture).city_parts
-    end
   end
 
   def check_city(fixture)
