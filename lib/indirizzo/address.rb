@@ -1,5 +1,4 @@
 require 'indirizzo/constants'
-require 'awesome_print'
 
 module Indirizzo
   # Defines the matching of parsed address tokens.
