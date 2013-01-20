@@ -5,6 +5,7 @@ and constants handling code) from [Geocommons](http://geocommons.com/)'
 [Geocoder::US 2.0](https://github.com/geocommons/geocoder) gem.
 
 [![Build Status](https://secure.travis-ci.org/daveworth/Indirizzo.png)](http://travis-ci.org/daveworth/Indirizzo)
+[![Gem Version](https://badge.fury.io/rb/Indirizzo.png)](http://badge.fury.io/rb/Indirizzo)
 
 ## Background
 
