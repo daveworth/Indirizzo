@@ -44,13 +44,9 @@ module Indirizzo
         @street = Street.expand(@street) if @options[:expand_streets]
         #Street.parts
       end
-      @city = []
-      if !text[:city].nil?
-        @city.push(text[:city])
-        @text = text[:city].to_s
-      else
-        @city.push("")
-      end
+
+      handle_city
+
       if !text[:region].nil?
         # @state = []
         @state = text[:region]
@@ -68,6 +64,16 @@ module Indirizzo
       @plus4 = text[:plus4]
       if !@zip
         @zip = @plus4 = ""
+      end
+    end
+
+    def handle_city
+      @city = []
+      if !@address_hash[:city].nil?
+        @city.push(@address_hash[:city])
+        @text = @address_hash[:city].to_s
+      else
+        @city.push("")
       end
     end
   end
