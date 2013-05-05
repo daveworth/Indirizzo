@@ -1,5 +1,6 @@
 require 'indirizzo/constants'
 require 'indirizzo/parser'
+require 'indirizzo/address_hash_extractor'
 require 'indirizzo/match'
 require 'indirizzo/city'
 require 'indirizzo/street'
@@ -39,7 +40,7 @@ module Indirizzo
     end
 
     def assign_text_to_address(text)
-      @text, @city, @street, @number, @prenum, @sufnum, @full_state, @state, @zip, @plus4, @country = Parser.extract_data_from_hash(text, @options)
+      @text, @city, @street, @number, @prenum, @sufnum, @full_state, @state, @zip, @plus4, @country = AddressHashExtractor.extract(text, @options)
     end
 
     def expand_numbers (string)
