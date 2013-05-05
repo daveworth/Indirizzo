@@ -20,5 +20,11 @@ module Indirizzo
       strings = good_strings if !good_strings.empty? {|s| not Std_Abbr.key?(s) and not Name_Abbr.key?(s)}
       strings
     end
+
+    def self.clean(value)
+      value.strip \
+           .gsub(/[^a-z0-9 ,'&@\/-]+/io, "") \
+           .gsub(/\s+/o, " ")
+    end
   end
 end

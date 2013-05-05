@@ -3,6 +3,7 @@ require 'indirizzo/parser'
 require 'indirizzo/match'
 require 'indirizzo/city'
 require 'indirizzo/street'
+require 'indirizzo/helper'
 
 module Indirizzo
   # The Address class takes a US street address or place name and
@@ -34,9 +35,7 @@ module Indirizzo
 
     # Removes any characters that aren't strictly part of an address string.
     def clean (value)
-      value.strip \
-           .gsub(/[^a-z0-9 ,'&@\/-]+/io, "") \
-           .gsub(/\s+/o, " ")
+      Helper.clean(value)
     end
 
     def assign_text_to_address(text)
