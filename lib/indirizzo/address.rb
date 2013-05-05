@@ -1,6 +1,7 @@
 require 'indirizzo/constants'
-require 'indirizzo/number_helper'
 require 'indirizzo/match'
+require 'indirizzo/city'
+require 'indirizzo/street'
 
 module Indirizzo
   # The Address class takes a US street address or place name and
@@ -177,56 +178,15 @@ module Indirizzo
     end
 
     def expand_streets(street)
-      if !street.empty? && !street[0].nil?
-        street.map! {|s|s.strip}
-        add = street.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}}
-        street |= add
-        add = street.map {|item| item.gsub(Std_Abbr.regexp) {|m| Std_Abbr[m]}}
-        street |= add
-        street.map! {|item| expand_numbers(item)}
-        street.flatten!
-        street.map! {|s| s.downcase}
-        street.uniq!
-      else
-        street = []
-      end
-      street
+      Street.expand(street)
     end
 
     def street_parts
-      strings = []
-      # Get all the substrings delimited by whitespace
-      @street.each {|string|
-        tokens = string.split(" ")
-        strings |= (0...tokens.length).map {|i|
-                   (i...tokens.length).map {|j| tokens[i..j].join(" ")}}.flatten
-      }
-      strings = remove_noise_words(strings)
-
-      # Try a simpler case of adding the @number in case everything is an abbr.
-      strings += [@number] if strings.all? {|s| Std_Abbr.key? s or Name_Abbr.key? s}
-      strings.uniq
+      Street.parts(@street, @number)
     end
 
     def remove_noise_words(strings)
-      # Don't return strings that consist solely of abbreviations.
-      # NOTE: Is this a micro-optimization that has edge cases that will break?
-      # Answer: Yes, it breaks on simple things like "Prairie St" or "Front St"
-      prefix = Regexp.new("^" + Prefix_Type.regexp.source + "\s*", Regexp::IGNORECASE)
-      suffix = Regexp.new("\s*" + Suffix_Type.regexp.source + "$", Regexp::IGNORECASE)
-      predxn = Regexp.new("^" + Directional.regexp.source + "\s*", Regexp::IGNORECASE)
-      sufdxn = Regexp.new("\s*" + Directional.regexp.source + "$", Regexp::IGNORECASE)
-      good_strings = strings.map {|s|
-        s = s.clone
-        s.gsub!(predxn, "")
-        s.gsub!(sufdxn, "")
-        s.gsub!(prefix, "")
-        s.gsub!(suffix, "")
-        s
-      }
-      good_strings.reject! {|s| s.empty?}
-      strings = good_strings if !good_strings.empty? {|s| not Std_Abbr.key?(s) and not Name_Abbr.key?(s)}
-      strings
+      Helper.remove_noise_words(strings)
     end
 
     def city_parts
