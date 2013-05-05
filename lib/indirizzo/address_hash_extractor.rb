@@ -46,19 +46,7 @@ module Indirizzo
       end
 
       handle_city
-
-      if !text[:region].nil?
-        # @state = []
-        @state = text[:region]
-        if @state.length > 2
-          # full_state = @state.strip # special case: New York
-          @state = State[@state]
-        end
-      elsif !text[:state].nil?
-        @state = text[:state]
-      elsif !text[:country].nil?
-        @state = text[:country]
-      end
+      handle_state
 
       @zip = text[:postal_code]
       @plus4 = text[:plus4]
@@ -74,6 +62,21 @@ module Indirizzo
         @text = @address_hash[:city].to_s
       else
         @city.push("")
+      end
+    end
+
+    def handle_state
+      if !@address_hash[:region].nil?
+        # @state = []
+        @state = @address_hash[:region]
+        if @state.length > 2
+          # full_state = @state.strip # special case: New York
+          @state = State[@state]
+        end
+      elsif !@address_hash[:state].nil?
+        @state = @address_hash[:state]
+      elsif !@address_hash[:country].nil?
+        @state = @address_hash[:country]
       end
     end
   end
