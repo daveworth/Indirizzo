@@ -20,17 +20,7 @@ module Indirizzo
 
       @state, @full_state, @city, state_index = extract_state_from_text(text)
 
-      @number = text.scan(Match[:number]).first
-      # FIXME: 230 Fish And Game Rd, Hudson NY 12534
-      if @number # and not intersection?
-        last_match = $&
-          number_index = text.index(last_match)
-        number_end_index = number_index + last_match.length - 1
-        @prenum, @number, @sufnum = @number.map {|s| s and s.strip}
-      else
-        number_end_index = -1
-        @prenum = @number = @sufnum = ""
-      end
+      @prenum, @number, @sufnum, number_end_index = process_number(text)
 
       # FIXME: special case: Name_Abbr gets a bit aggressive
       # about replacing St with Saint. exceptional case:
@@ -101,6 +91,21 @@ module Indirizzo
         # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
         @city << @full_state if @state.downcase != @full_state.downcase
       end
+    end
+
+    def process_number(text)
+      number = text.scan(Match[:number]).first
+      # FIXME: 230 Fish And Game Rd, Hudson NY 12534
+      if number # and not intersection?
+        last_match = $&
+          number_index = text.index(last_match)
+        number_end_index = number_index + last_match.length - 1
+        prenum, number, sufnum = number.map {|s| s and s.strip}
+      else
+        number_end_index = -1
+        prenum = number = sufnum = ""
+      end
+      return prenum, number, sufnum, number_end_index
     end
   end
 end
