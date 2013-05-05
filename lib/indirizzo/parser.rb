@@ -46,22 +46,7 @@ module Indirizzo
 
       street_end_index = @street.map { |s| text.rindex(s) }.reject(&:nil?).min||0
 
-      if @city.nil? || @city.empty?
-        @city = text[street_end_index..street_search_end_index+1].scan(Match[:city])
-        if !@city.empty?
-          #@city = [@city[-1].strip]
-          @city = [@city.last.strip]
-          add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}}
-          @city |= add
-          @city.map! {|s| s.downcase}
-          @city.uniq!
-        else
-          @city = []
-        end
-
-        # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
-        @city << @full_state if @state.downcase != @full_state.downcase
-      end
+      process_city(text, street_end_index, street_search_end_index)
 
       return @city, @street, @number, @prenum, @sufnum, @full_state, @state, @zip, @plus4, @country
     end
@@ -97,6 +82,25 @@ module Indirizzo
         state = ""
       end
       return state, full_state, city, state_index
+    end
+
+    def process_city(text, street_end_index, street_search_end_index)
+      if @city.nil? || @city.empty?
+        @city = text[street_end_index..street_search_end_index+1].scan(Match[:city])
+        if !@city.empty?
+          #@city = [@city[-1].strip]
+          @city = [@city.last.strip]
+          add = @city.map {|item| item.gsub(Name_Abbr.regexp) {|m| Name_Abbr[m]}}
+          @city |= add
+          @city.map! {|s| s.downcase}
+          @city.uniq!
+        else
+          @city = []
+        end
+
+        # SPECIAL CASE: no city, but a state with the same name. e.g. "New York"
+        @city << @full_state if @state.downcase != @full_state.downcase
+      end
     end
   end
 end
