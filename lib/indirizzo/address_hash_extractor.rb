@@ -22,16 +22,22 @@ module Indirizzo
 
     private
     def handle_hash
-      text = @address_hash
+      handle_street_and_numbers
+      handle_city
+      handle_state
+      handle_zip
+    end
+
+    def handle_street_and_numbers
       @street = []
-      @prenum = text[:prenum]
-      @sufnum = text[:sufnum]
-      if !text[:street].nil?
-        @street = text[:street].scan(Match[:street])
+      @prenum = @address_hash[:prenum]
+      @sufnum = @address_hash[:sufnum]
+      if !@address_hash[:street].nil?
+        @street = @address_hash[:street].scan(Match[:street])
       end
       @number = ""
       if !@street.nil?
-        if text[:number].nil?
+        if @address_hash[:number].nil?
           @street.map! { |single_street|
             single_street.downcase!
             @number = single_street.scan(Match[:number])[0].reject{|n| n.nil? || n.empty?}.first.to_s
@@ -39,19 +45,9 @@ module Indirizzo
             single_street.sub! /^\s*,?\s*/o, ""
           }
         else
-          @number = text[:number].to_s
+          @number = @address_hash[:number].to_s
         end
         @street = Street.expand(@street) if @options[:expand_streets]
-        #Street.parts
-      end
-
-      handle_city
-      handle_state
-
-      @zip = text[:postal_code]
-      @plus4 = text[:plus4]
-      if !@zip
-        @zip = @plus4 = ""
       end
     end
 
@@ -77,6 +73,14 @@ module Indirizzo
         @state = @address_hash[:state]
       elsif !@address_hash[:country].nil?
         @state = @address_hash[:country]
+      end
+    end
+
+    def handle_zip
+      @zip = @address_hash[:postal_code]
+      @plus4 = @address_hash[:plus4]
+      if !@zip
+        @zip = @plus4 = ""
       end
     end
   end
