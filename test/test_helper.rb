@@ -1,2 +1,3 @@
-require 'cover_me'
+require 'simplecov'
+SimpleCov.start
 require 'test/unit'
