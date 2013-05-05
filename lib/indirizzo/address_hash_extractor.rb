@@ -64,12 +64,9 @@ module Indirizzo
 
     def handle_state
       if !address_hash[:region].nil?
-        # @state = []
         @state = address_hash[:region]
-        if @state.length > 2
-          # full_state = @state.strip # special case: New York
-          @state = State[@state]
-        end
+        # full_state = @state.strip # special case: New York
+        @state = State[@state] if @state.length > 2
       elsif !address_hash[:state].nil?
         @state = address_hash[:state]
       elsif !address_hash[:country].nil?
