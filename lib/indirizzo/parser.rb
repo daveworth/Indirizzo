@@ -18,15 +18,7 @@ module Indirizzo
       @country = @text[zip_end_index+1..-1].sub(/^\s*,\s*/, '').strip
       @country = nil if @country == text
 
-      @state = text.scan(Match[:state]).last
-      if @state
-        last_match = $&
-          state_index = text.rindex(last_match)
-        text = parse_state(last_match, text)
-      else
-        @full_state = ""
-        @state = ""
-      end
+      @state, @full_state, @city, state_index = extract_state_from_text(text)
 
       @number = text.scan(Match[:number]).first
       # FIXME: 230 Fish And Game Rd, Hudson NY 12534
@@ -76,14 +68,6 @@ module Indirizzo
 
     private
 
-    def parse_state(regex_match, text)
-      idx = text.rindex(regex_match)
-      @full_state = @state[0].strip # special case: New York
-      @state = State[@full_state]
-      @city = "Washington" if @state == "DC" && text[idx...idx+regex_match.length] =~ /washington\s+d\.?c\.?/i
-      text
-    end
-
     def extract_zip_from_text(text)
       zip = text.scan(Match[:zip]).last
       if zip
@@ -97,6 +81,22 @@ module Indirizzo
         zip_end_index = -1
       end
       return zip, plus4, zip_index, zip_end_index
+    end
+
+    def extract_state_from_text(text)
+      state = text.scan(Match[:state]).last
+      if state
+        last_match = $&
+          state_index = text.rindex(last_match)
+        idx = text.rindex(last_match)
+        full_state = state[0].strip # special case: New York
+        state = State[full_state]
+        city = "Washington" if state == "DC" && text[idx...idx+last_match.length] =~ /washington\s+d\.?c\.?/i
+      else
+        full_state = ""
+        state = ""
+      end
+      return state, full_state, city, state_index
     end
   end
 end
