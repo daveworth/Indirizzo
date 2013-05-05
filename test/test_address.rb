@@ -16,14 +16,6 @@ class TestAddress < Test::Unit::TestCase
     assert_equal "1600 Pennsylvania Av, Washington DC", addr.text
   end
 
-  def test_expand_numbers
-    num_list = ["5", "fifth", "five"]
-    num_list.each {|n|
-      addr = Address.new(n)
-      assert_equal num_list, addr.expand_numbers(n).to_a.sort
-    }
-  end
-
   def test_expand_street
     addr = Address.new("1 First St, Atlanta GA, 12345")
     expected_streets = ["1 st", "first st", "one st"]
