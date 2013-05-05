@@ -13,17 +13,7 @@ module Indirizzo
     def parse
       text = @text.clone.downcase
 
-      @zip = text.scan(Match[:zip]).last
-      if @zip
-        last_match = $&
-          zip_index = text.rindex(last_match)
-        zip_end_index = zip_index + last_match.length - 1
-        @zip, @plus4 = @zip.map {|s| s and s.strip }
-      else
-        @zip = @plus4 = ""
-        zip_index = text.length
-        zip_end_index = -1
-      end
+      @zip, @plus4, zip_index, zip_end_index = extract_zip_from_text(text)
 
       @country = @text[zip_end_index+1..-1].sub(/^\s*,\s*/, '').strip
       @country = nil if @country == text
@@ -92,6 +82,21 @@ module Indirizzo
       @state = State[@full_state]
       @city = "Washington" if @state == "DC" && text[idx...idx+regex_match.length] =~ /washington\s+d\.?c\.?/i
       text
+    end
+
+    def extract_zip_from_text(text)
+      zip = text.scan(Match[:zip]).last
+      if zip
+        last_match = $&
+          zip_index = text.rindex(last_match)
+        zip_end_index = zip_index + last_match.length - 1
+        zip, plus4 = zip.map {|s| s and s.strip }
+      else
+        zip = plus4 = ""
+        zip_index = text.length
+        zip_end_index = -1
+      end
+      return zip, plus4, zip_index, zip_end_index
     end
   end
 end
