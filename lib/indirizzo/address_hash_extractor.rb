@@ -8,10 +8,11 @@ module Indirizzo
       @address_hash = address_hash
       @options = options
     end
+    attr_accessor :address_hash
 
     def extract
-      if !@address_hash[:address].nil?
-        @text = Helper.clean @address_hash[:address]
+      if !address_hash[:address].nil?
+        @text = Helper.clean address_hash[:address]
         return Parser.new(@text, @options).parse
       else
         handle_hash
@@ -30,14 +31,14 @@ module Indirizzo
 
     def handle_street_and_numbers
       @street = []
-      @prenum = @address_hash[:prenum]
-      @sufnum = @address_hash[:sufnum]
-      if !@address_hash[:street].nil?
-        @street = @address_hash[:street].scan(Match[:street])
+      @prenum = address_hash[:prenum]
+      @sufnum = address_hash[:sufnum]
+      if !address_hash[:street].nil?
+        @street = address_hash[:street].scan(Match[:street])
       end
       @number = ""
       if !@street.nil?
-        if @address_hash[:number].nil?
+        if address_hash[:number].nil?
           @street.map! { |single_street|
             single_street.downcase!
             @number = single_street.scan(Match[:number])[0].reject{|n| n.nil? || n.empty?}.first.to_s
@@ -45,7 +46,7 @@ module Indirizzo
             single_street.sub! /^\s*,?\s*/o, ""
           }
         else
-          @number = @address_hash[:number].to_s
+          @number = address_hash[:number].to_s
         end
         @street = Street.expand(@street) if @options[:expand_streets]
       end
@@ -53,32 +54,32 @@ module Indirizzo
 
     def handle_city
       @city = []
-      if !@address_hash[:city].nil?
-        @city.push(@address_hash[:city])
-        @text = @address_hash[:city].to_s
+      if !address_hash[:city].nil?
+        @city.push(address_hash[:city])
+        @text = address_hash[:city].to_s
       else
         @city.push("")
       end
     end
 
     def handle_state
-      if !@address_hash[:region].nil?
+      if !address_hash[:region].nil?
         # @state = []
-        @state = @address_hash[:region]
+        @state = address_hash[:region]
         if @state.length > 2
           # full_state = @state.strip # special case: New York
           @state = State[@state]
         end
-      elsif !@address_hash[:state].nil?
-        @state = @address_hash[:state]
-      elsif !@address_hash[:country].nil?
-        @state = @address_hash[:country]
+      elsif !address_hash[:state].nil?
+        @state = address_hash[:state]
+      elsif !address_hash[:country].nil?
+        @state = address_hash[:country]
       end
     end
 
     def handle_zip
-      @zip = @address_hash[:postal_code]
-      @plus4 = @address_hash[:plus4]
+      @zip = address_hash[:postal_code]
+      @plus4 = address_hash[:plus4]
       if !@zip
         @zip = @plus4 = ""
       end
