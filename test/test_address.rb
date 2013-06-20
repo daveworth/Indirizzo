@@ -125,7 +125,7 @@ class TestAddress < Test::Unit::TestCase
     [ "Philadelphia 19131", "Philadelphia", "", "19131" ],
     [ "Pennsylvania 19131", "Pennsylvania", "PA", "19131" ], # kind of a misfeature
     [ "19131", "", "", "19131" ],
-    [ "19131-9999", "", "", "19131" ],
+    [ "19131-9999", "", "", "19131" ]
   ].each do |fixture|
     fixture_name = fixture[0].gsub(/(?:\s+|[,])/,'_')
     define_method "test_city_parse_#{fixture_name}" do
@@ -145,6 +145,27 @@ class TestAddress < Test::Unit::TestCase
         end
       end
   end
+
+  # test city parsing from text
+	[
+	  { :text => "590 Tonne Rd Elk Grove Village, IL 60007", 
+		  :city => "Elk Grove Village"},
+		{ :text => "1600 Pennsylvania Av., Washington DC 20050", 
+		  :city => "Washington"},
+		{ :text => "1005 Gravenstein Highway North, Sebastopol CA",
+		  :city => "Sebastopol"}
+	].each do |fixture|
+    define_method "test_city_parse_from_#{fixture[:text].gsub(/(?:\s+|[.,])/,'_').downcase}" do
+      pend if fixture[:pending]
+      test_parse_of_city(fixture)
+    end
+  end
+
+	def test_parse_of_city(fixture)
+	  text = fixture[:text]
+		city = fixture[:city]
+	  assert Address.new(text).city.include?(city.downcase)
+	end
 
   # test address parsing code
   [
