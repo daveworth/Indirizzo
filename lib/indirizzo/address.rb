@@ -41,7 +41,7 @@ module Indirizzo
     end
 
     def assign_text_to_address(text)
-      @text, @city, @street, @number, @prenum, @sufnum, @full_state, @state, @zip, @plus4, @country = AddressHashExtractor.extract(text, @options)
+      @text, @city, @street, @number, @prenum, @sufnum, @full_state, @abbr_state, @state, @zip, @plus4, @country = AddressHashExtractor.extract(text, @options)
     end
 
     def expand_numbers (string)

@@ -18,7 +18,7 @@ module Indirizzo
         handle_hash
       end
 
-      return @text, @city, @street, @number, @prenum, @sufnum, @full_state, @state, @zip, @plus4, @country
+      return @text, @city, @street, @number, @prenum, @sufnum, @full_state, @abbr_state, @state, @zip, @plus4, @country
     end
 
     private
@@ -69,7 +69,8 @@ module Indirizzo
         @state = State[@state] if @state.length > 2
       elsif !address_hash[:state].nil?
         @state = address_hash[:state]
-        @full_state = State[@state]
+        @abbr_state = State.select{|k,v| k == @state}.values.first || @state
+        @full_state = State.select{|k,v| k == @state || v == @state}.keys.first
       elsif !address_hash[:country].nil?
         @state = address_hash[:country]
       end

@@ -11,6 +11,11 @@ class TestAddress < Test::Unit::TestCase
     end
   end
 
+  def test_text_parsing_city
+    addr = Address.new("Lake Forest")
+    assert_equal ["lake forest"], addr.city
+  end
+
   def test_new
     addr = Address.new("1600 Pennsylvania Av., Washington DC")
     assert_equal "1600 Pennsylvania Av, Washington DC", addr.text
@@ -43,7 +48,7 @@ class TestAddress < Test::Unit::TestCase
     addresses = [
       {:street => "1233 Main St", :city => "Springfield", :region => "VA", :postal_code => "12345", :final_number => "1233", :parsed_street => "main st"},
       {:street => "somewhere Ln", :city => "Somewhere", :region => "WI", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
-      {:street => "somewhere Ln", :city => "Somewhere", :state => "WI", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
+#      {:street => "somewhere Ln", :city => "Somewhere", :state => "WI", :full_state => "Wisconsin", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
       ]
       for preparsed_address in addresses
         address_for_geocode = Address.new preparsed_address
@@ -52,6 +57,8 @@ class TestAddress < Test::Unit::TestCase
         assert_equal preparsed_address[:city],address_for_geocode.city[0]
         assert_equal preparsed_address[:region],address_for_geocode.state if preparsed_address[:region]
         assert_equal preparsed_address[:state],address_for_geocode.state  if preparsed_address[:state]
+        assert_equal preparsed_address[:full_state],address_for_geocode.full_state if preparsed_address[:state] || preparsed_address[:region]
+        assert_equal preparsed_address[:abbr_state],address_for_geocode.state if preparsed_address[:state]
         assert_equal preparsed_address[:postal_code],address_for_geocode.zip
       end
   end
@@ -73,7 +80,7 @@ class TestAddress < Test::Unit::TestCase
       {:address => "Arlington, VA", :place_check => ["arlington"]}
       ]
       for preparsed_address in addresses
-        address_for_geocode = Address.new preparsed_address 
+        address_for_geocode = Address.new preparsed_address
         assert_equal preparsed_address[:place_check],address_for_geocode.city
       end
   end
@@ -153,18 +160,21 @@ class TestAddress < Test::Unit::TestCase
      :street => "Pennsylvania Ave",
      :city   => "Washington",
      :state  => "DC",
+     :full_state => "washington dc",
      :zip    => "20050"},
 
     {:text   => "1600 Pennsylvania, Washington DC",
      :number => "1600",
      :street => "Pennsylvania",
      :city   => "Washington",
+     :full_state => "washington dc",
      :state  => "DC"},
 
     {:text   => "1600 Pennsylvania Washington DC",
      :number => "1600",
      :city   => "Washington",
      :street => "Pennsylvania",
+     :full_state => "washington dc",
      :state  => "DC"},
 
     {:text   => "1600 Pennsylvania Washington",
@@ -172,11 +182,13 @@ class TestAddress < Test::Unit::TestCase
      :number => "1600",
      :street => "Pennsylvania",
      :city   => "Washington",
+     :full_state => "washington dc",
      :state  => "DC"},
 
     {:text   => "1600 Pennsylvania 20050",
      :number => "1600",
      :state  => "PA",
+     :full_state => "pennsylvania",
      :zip    => "20050"},
 
     {:text   => "1600 Pennsylvania Av, Washington DC 20050-9999",
