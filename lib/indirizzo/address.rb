@@ -16,6 +16,7 @@ module Indirizzo
     attr_accessor :street
     attr_accessor :city
     attr_accessor :state
+    attr_accessor :full_state
     attr_accessor :zip, :plus4
     attr_accessor :country
     attr_accessor :options
