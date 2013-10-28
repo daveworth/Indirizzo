@@ -69,6 +69,7 @@ module Indirizzo
         @state = State[@state] if @state.length > 2
       elsif !address_hash[:state].nil?
         @state = address_hash[:state]
+        @full_state = State[@state]
       elsif !address_hash[:country].nil?
         @state = address_hash[:country]
       end
