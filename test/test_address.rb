@@ -48,7 +48,7 @@ class TestAddress < Test::Unit::TestCase
     addresses = [
       {:street => "1233 Main St", :city => "Springfield", :region => "VA", :postal_code => "12345", :final_number => "1233", :parsed_street => "main st"},
       {:street => "somewhere Ln", :city => "Somewhere", :region => "WI", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
-#      {:street => "somewhere Ln", :city => "Somewhere", :state => "WI", :full_state => "Wisconsin", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
+      {:street => "somewhere Ln", :city => "Somewhere", :state => "WI", :abbr_state => "WI", :full_state => "Wisconsin", :postal_code => "22222", :number => "402", :parsed_street => "somewhere ln", :final_number => "402"},
       ]
       for preparsed_address in addresses
         address_for_geocode = Address.new preparsed_address
