@@ -24,7 +24,7 @@ my simple needs. I simply need to parse addresses that may, or may not, be
 ## Usage
 
 ```ruby
-require 'Indirizzo'
+require 'indirizzo'
 Indirizzo::Address.new("some address")
 ```
 
