@@ -587,6 +587,12 @@ module Indirizzo
   # The State constant maps US state and territory names to their 2-letter
   # USPS abbreviations.
   State = Map[
+    "Armed Forces Americas"           => "AA",
+    "Armed Forces Africa"             => "AE",
+    "Armed Forces Canada"             => "AE",
+    "Armed Forces Europe"             => "AE",
+    "Armed Forces Middle East"        => "AE",
+    "Armed Forces Pacific"            => "AP",
     "Alabama"		=> "AL",
     "Alaska"		=> "AK",
     "American Samoa"	=> "AS",
